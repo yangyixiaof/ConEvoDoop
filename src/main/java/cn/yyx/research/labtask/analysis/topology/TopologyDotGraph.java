@@ -38,14 +38,15 @@ public class TopologyDotGraph {
 		while (itr.hasNext())
 		{
 			TopologyNode tn = itr.next();
+			
+			int line_number = tn.getLine_number();
+			// String represent = tn.getRepresent().replace('.', '_').replace('<', '_').replace('>', '_').replace('#', '_');
+			if (nodename != null) {
+				sb.append(line_number + "->" + nodename + ";\n");// represent + "->" + nodename + ";\n"
+			}
 			if (!visited.contains(tn))
 			{
 				visited.add(tn);
-				int line_number = tn.getLine_number();
-				// String represent = tn.getRepresent().replace('.', '_').replace('<', '_').replace('>', '_').replace('#', '_');
-				if (nodename != null) {
-					sb.append(line_number + "->" + nodename + ";\n");// represent + "->" + nodename + ";\n"
-				}
 				IterateEachPath(tn.IterateTopologyNode(), sb, line_number + "");
 			}
 		}
