@@ -3,6 +3,6 @@ digraph {
 edge[fontname="SimSun",fontcolor=red];
 node[fontname="SimSun",size="20,20"];
 
-24->29;
+25->30;
 
 }

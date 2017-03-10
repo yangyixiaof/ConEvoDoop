@@ -61,4 +61,18 @@ public class TopologyNode {
 		this.line_number = line_number;
 	}
 	
+	@Override
+	public int hashCode() {
+		return kernel.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TopologyNode)
+		{
+			return kernel.equals(((TopologyNode)obj).kernel);
+		}
+		return super.equals(obj);
+	}
+	
 }
