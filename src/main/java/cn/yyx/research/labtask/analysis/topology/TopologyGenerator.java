@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -39,7 +40,10 @@ public class TopologyGenerator extends ASTVisitor {
 	private Map<IBinding, TopologyNode> last_binding_node = new HashMap<IBinding, TopologyNode>();
 	private Set<TopologyNode> roots = new HashSet<TopologyNode>();
 	
-	public TopologyGenerator() {
+	private CompilationUnit unit = null;
+	
+	public TopologyGenerator(CompilationUnit cu) {
+		unit = cu;
 	}
 	
 	@Override
@@ -99,7 +103,8 @@ public class TopologyGenerator extends ASTVisitor {
 					roots.remove(tn);
 				}
 			}
-			TopologyNode ntn = new TopologyNode(start_statement, represent.toString(), wrap_with_try_catch, topos);
+			int line_number = unit.getLineNumber(node.getStartPosition()) - 1;
+			TopologyNode ntn = new TopologyNode(start_statement, represent.toString(), line_number, wrap_with_try_catch, topos);
 			roots.add(ntn);
 			if (correspond_binding == null) {
 				if (!is_static_access)
@@ -133,7 +138,8 @@ public class TopologyGenerator extends ASTVisitor {
 			return;
 		}
 		
-		System.out.println("SimpleName:" + node);
+		// testing.
+		// System.out.println("SimpleName:" + node);
 		
 		IBinding binding = node.resolveBinding();
 		if (binding != null)

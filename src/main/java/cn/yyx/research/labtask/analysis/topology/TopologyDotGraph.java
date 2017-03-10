@@ -34,11 +34,12 @@ public class TopologyDotGraph {
 		while (itr.hasNext())
 		{
 			TopologyNode tn = itr.next();
-			String represent = tn.getRepresent().replace('.', '_').replace('<', '_').replace('>', '_').replace('#', '_');
+			int line_number = tn.getLine_number();
+			// String represent = tn.getRepresent().replace('.', '_').replace('<', '_').replace('>', '_').replace('#', '_');
 			if (nodename != null) {
-				sb.append(represent + "->" + nodename + ";\n");
+				sb.append(line_number + "->" + nodename + ";\n");// represent + "->" + nodename + ";\n"
 			}
-			IterateEachPath(tn.IterateTopologyNode(), sb, represent);
+			IterateEachPath(tn.IterateTopologyNode(), sb, line_number+"");
 		}
 	}
 	

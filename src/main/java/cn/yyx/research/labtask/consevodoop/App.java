@@ -85,7 +85,7 @@ public class App {
 						MethodDeclaration[] methods = ((TypeDeclaration) atd).getMethods();
 						for (MethodDeclaration method : methods)
 						{
-							TopologyGenerator topo = new TopologyGenerator();
+							TopologyGenerator topo = new TopologyGenerator(cu);
 							method.accept(topo);
 							String fname = f.getName();
 							TopologyDotGraph tdg = new TopologyDotGraph(fname.substring(0, fname.lastIndexOf(".java")) + "_" + method.getName().toString(), topo.TopologyRoots());
