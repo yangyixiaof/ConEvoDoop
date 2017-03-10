@@ -37,7 +37,7 @@ public class RegressionTest8 {
 
 	}
 
-	/*@Test
+	@Test
 	public void test2() throws Throwable {
 
 		if (debug) {
@@ -56,7 +56,7 @@ public class RegressionTest8 {
 
 	}
 
-	@Test
+	/*@Test
 	public void test3() throws Throwable {
 
 		if (debug) {
