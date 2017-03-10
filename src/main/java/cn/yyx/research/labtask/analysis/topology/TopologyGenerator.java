@@ -181,6 +181,9 @@ public class TopologyGenerator extends ASTVisitor {
 	
 	public Set<TopologyNode> TopologyRoots()
 	{
+		
+		System.out.println(roots);
+		
 		return roots;
 	}
 	

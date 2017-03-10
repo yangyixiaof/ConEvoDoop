@@ -1,6 +1,7 @@
 package cn.yyx.research.labtask.analysis.topology;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ public class TopologyDotGraph {
 	
 	private Set<TopologyNode> topology_root = null;
 	private String name = null;
+	private Set<TopologyNode> visited = new HashSet<TopologyNode>();
 	public static String randoop_tests_dot_directory = "randoop-tests-dot";
 	
 	public TopologyDotGraph(String name, Set<TopologyNode> topology_root) {
@@ -20,6 +22,8 @@ public class TopologyDotGraph {
 	
 	public void GenerateAllPath()
 	{
+		visited.clear();
+		
 		StringBuilder sb = new StringBuilder("");
 		sb.append("digraph {\n\nedge[fontname=\"SimSun\",fontcolor=red];\nnode[fontname=\"SimSun\",size=\"20,20\"];\n\n");
 		
@@ -34,12 +38,16 @@ public class TopologyDotGraph {
 		while (itr.hasNext())
 		{
 			TopologyNode tn = itr.next();
-			int line_number = tn.getLine_number();
-			// String represent = tn.getRepresent().replace('.', '_').replace('<', '_').replace('>', '_').replace('#', '_');
-			if (nodename != null) {
-				sb.append(line_number + "->" + nodename + ";\n");// represent + "->" + nodename + ";\n"
+			if (!visited.contains(tn))
+			{
+				visited.add(tn);
+				int line_number = tn.getLine_number();
+				// String represent = tn.getRepresent().replace('.', '_').replace('<', '_').replace('>', '_').replace('#', '_');
+				if (nodename != null) {
+					sb.append(line_number + "->" + nodename + ";\n");// represent + "->" + nodename + ";\n"
+				}
+				IterateEachPath(tn.IterateTopologyNode(), sb, line_number + "");
 			}
-			IterateEachPath(tn.IterateTopologyNode(), sb, line_number + "");
 		}
 	}
 	
