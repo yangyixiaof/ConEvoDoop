@@ -3,6 +3,6 @@ digraph {
 edge[fontname="SimSun",fontcolor=red];
 node[fontname="SimSun",size="20,20"];
 
-java_lang_System->_tutorial_Stack_tutorial_Stack_tutorial_Stack_tutorial_Stack_tutorial_Stack_tutorial_Stack_java_lang_Object______;
+12->13;
 
 }
