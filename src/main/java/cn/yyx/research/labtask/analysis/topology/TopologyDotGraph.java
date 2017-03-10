@@ -39,7 +39,7 @@ public class TopologyDotGraph {
 			if (nodename != null) {
 				sb.append(line_number + "->" + nodename + ";\n");// represent + "->" + nodename + ";\n"
 			}
-			IterateEachPath(tn.IterateTopologyNode(), sb, line_number+"");
+			IterateEachPath(tn.IterateTopologyNode(), sb, line_number + "");
 		}
 	}
 	
