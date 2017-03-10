@@ -103,7 +103,7 @@ public class TopologyGenerator extends ASTVisitor {
 					roots.remove(tn);
 				}
 			}
-			int line_number = unit.getLineNumber(node.getStartPosition()) - 1;
+			int line_number = unit.getLineNumber(node.getStartPosition());// - 1
 			TopologyNode ntn = new TopologyNode(start_statement, represent.toString(), line_number, wrap_with_try_catch, topos);
 			roots.add(ntn);
 			if (correspond_binding == null) {
