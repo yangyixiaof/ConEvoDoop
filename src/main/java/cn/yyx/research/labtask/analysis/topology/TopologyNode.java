@@ -1,27 +1,47 @@
 package cn.yyx.research.labtask.analysis.topology;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Statement;
 
 public class TopologyNode {
 	
+	private boolean instance_creation = false;
+	// only set when instance_creation is true.
+	private IVariableBinding instance_binding = null;
+	
 	private Statement kernel = null;
-	private String represent = null;
 	private int line_number = -1;
 	private boolean need_try_catch = false;
+	private Set<TopologyNode> up_parents = new HashSet<TopologyNode>();
+	private Map<IBinding, HashSet<IBinding>> data_dependency_current_copy = new HashMap<IBinding, HashSet<IBinding>>();
 	
-	private List<TopologyNode> up_parents = new LinkedList<TopologyNode>();
+	public TopologyNode() {
+	}
 	
-	public TopologyNode(Statement kernel, String represent, int line_number, boolean need_try_catch, List<TopologyNode> up_parents)
+//	public void SetTopologyNode(Statement kernel, String represent, int line_number, boolean need_try_catch, Set<TopologyNode> up_parents)
+//	{
+//		this.setKernel(kernel);
+//		this.setRepresent(represent);
+//		this.setLine_number(line_number);
+//		this.setNeed_try_catch(need_try_catch);
+//		this.up_parents.addAll(up_parents);
+//	}
+	
+	public void SnapShotDataDependency(Map<IBinding, HashSet<IBinding>> data_dependency)
 	{
-		this.setKernel(kernel);
-		this.setRepresent(represent);
-		this.setLine_number(line_number);
-		this.setNeed_try_catch(need_try_catch);
-		this.up_parents.addAll(up_parents);
+		data_dependency_current_copy.putAll(data_dependency);
+	}
+	
+	public void AddOneParent(TopologyNode one_up_parent)
+	{
+		this.up_parents.add(one_up_parent);
 	}
 	
 	public Iterator<TopologyNode> IterateTopologyNode()
@@ -33,23 +53,23 @@ public class TopologyNode {
 		return kernel;
 	}
 
-	private void setKernel(Statement kernel) {
+	public void setKernel(Statement kernel) {
 		this.kernel = kernel;
 	}
 
-	public String getRepresent() {
-		return represent;
-	}
-
-	private void setRepresent(String represent) {
-		this.represent = represent;
-	}
+//	public String getRepresent() {
+//		return represent;
+//	}
+//
+//	public void setRepresent(String represent) {
+//		this.represent = represent;
+//	}
 
 	public boolean isNeed_try_catch() {
 		return need_try_catch;
 	}
 
-	private void setNeed_try_catch(boolean need_try_catch) {
+	public void setNeed_try_catch(boolean need_try_catch) {
 		this.need_try_catch = need_try_catch;
 	}
 
@@ -57,7 +77,7 @@ public class TopologyNode {
 		return line_number;
 	}
 
-	private void setLine_number(int line_number) {
+	public void setLine_number(int line_number) {
 		this.line_number = line_number;
 	}
 	
@@ -77,7 +97,20 @@ public class TopologyNode {
 	
 	@Override
 	public String toString() {
-		return kernel.toString();
+		return line_number + ";" + kernel.toString();
+	}
+
+	public boolean isInstance_creation() {
+		return instance_creation;
+	}
+
+	public void setInstance_creation(boolean instance_creation, IVariableBinding instance_binding) {
+		this.instance_creation = instance_creation;
+		this.instance_binding = instance_binding;
+	}
+
+	public IVariableBinding getInstance_type_binding() {
+		return instance_binding;
 	}
 	
 }
