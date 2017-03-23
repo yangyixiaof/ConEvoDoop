@@ -14,14 +14,15 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import cn.yyx.research.labtask.analysis.ast.BindingManager;
 
@@ -127,7 +128,7 @@ public class TopologyGenerator extends ASTVisitor {
 		super.postVisit(node);
 	}
 
-	private void HandleDataDependency(IBinding ib) {
+	private IBinding HandleDataDependency(IBinding ib) {
 		if (BindingManager.QualifiedBinding(ib)) {
 			HashSet<IBinding> set = data_dependency.get(ib);
 			if (set == null) {
@@ -135,7 +136,9 @@ public class TopologyGenerator extends ASTVisitor {
 				data_dependency.put(ib, set);
 			}
 			set.addAll(temp_binds);
+			return ib;
 		}
+		return null;
 	}
 
 	@Override
@@ -149,11 +152,11 @@ public class TopologyGenerator extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(SingleVariableDeclaration node) {
+	public void endVisit(VariableDeclarationFragment node) {
 		Name name = node.getName();
 		IBinding ib = name.resolveBinding();
-		HandleDataDependency(ib);
-		current_node.setInstance_creation(true, node.resolveBinding());
+		IVariableBinding ivb = (IVariableBinding)HandleDataDependency(ib);
+		current_node.setInstance_creation(true, ivb);
 	}
 
 	@Override

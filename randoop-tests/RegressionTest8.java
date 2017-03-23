@@ -15,7 +15,7 @@ public class RegressionTest8 {
 				(int) (short) 1);
 	}
 
-	@Test
+	/*@Test
 	public void test1() throws Throwable {
 
 		if (debug) {
@@ -189,6 +189,6 @@ public class RegressionTest8 {
 		tutorial.Stack<tutorial.Stack<tutorial.Stack<tutorial.Stack<java.lang.Object>>>> stack_stack_stack_stack_obj73 = stack_stack_stack_stack_stack_obj58
 				.pop();
 
-	}
+	}*/
 
 }
