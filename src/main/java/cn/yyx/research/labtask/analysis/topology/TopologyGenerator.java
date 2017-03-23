@@ -60,7 +60,8 @@ public class TopologyGenerator extends ASTVisitor {
 			while (itr.hasNext())
 			{
 				IBinding ib = itr.next();
-				current_node.AddOneParent(last_binding_node.get(ib));
+				TopologyNode tn = last_binding_node.get(ib);
+				current_node.AddOneParent(tn);
 			}
 			itr = temp_binds.iterator();
 			while (itr.hasNext())
@@ -79,11 +80,19 @@ public class TopologyGenerator extends ASTVisitor {
 	public TopologyGenerator(CompilationUnit cu) {
 		unit = cu;
 	}
+	
+	private boolean QualifiedStatement(ASTNode node)
+	{
+		if ((node instanceof Statement) && !(node instanceof IfStatement) && !(node instanceof TryStatement)
+				&& !(node instanceof Block)) {
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public boolean preVisit2(ASTNode node) {
-		if ((node instanceof Statement) && !(node instanceof IfStatement) && !(node instanceof TryStatement)
-				&& !(node instanceof Block)) {
+		if (QualifiedStatement(node)) {
 			if (current_node == null) {
 				current_node = new TopologyNode();
 			}
@@ -105,9 +114,12 @@ public class TopologyGenerator extends ASTVisitor {
 
 	@Override
 	public void postVisit(ASTNode node) {
-		if (node instanceof Statement) {
-			current_node = null;
-			StatementOverHandle((Statement)node);
+		if (QualifiedStatement(node)) {
+			if (current_node != null)
+			{
+				StatementOverHandle((Statement)node);
+				current_node = null;
+			}
 		}
 		if (node instanceof TryStatement) {
 			wrap_with_try_catch = false;

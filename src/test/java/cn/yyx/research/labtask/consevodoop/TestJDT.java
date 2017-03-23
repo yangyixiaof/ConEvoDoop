@@ -7,9 +7,11 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -43,7 +45,19 @@ public class TestJDT {
 		IDocument pdocument = new Document(FileUtil.ReadFromFile(new File("test_examples/TestUtil.java")));
 		CompilationUnit cu = JDTUtil.parseSourceCode("TestUtil.java", pdocument, null);
 		cu.accept(new ASTVisitor() {
-
+			
+			@Override
+			public boolean visit(SimpleName node) {
+				IBinding ib = node.resolveBinding();
+				if (ib instanceof IVariableBinding)
+				{
+					IVariableBinding ivb = (IVariableBinding)ib;
+					System.out.println("ivb:"+ivb);
+					System.out.println("ivb_type:"+ivb.getType());
+				}
+				return super.visit(node);
+			}
+			
 			@Override
 			public void endVisit(MethodInvocation node) {
 				Expression expr = node.getExpression();
