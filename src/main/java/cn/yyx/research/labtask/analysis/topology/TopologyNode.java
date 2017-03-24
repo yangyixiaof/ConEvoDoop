@@ -22,6 +22,7 @@ public class TopologyNode {
 	private int line_number = -1;
 	private boolean need_try_catch = false;
 	private Set<TopologyNode> up_parents = new HashSet<TopologyNode>();
+	private Set<TopologyNode> down_cjilds = new HashSet<TopologyNode>();
 	private Map<IBinding, HashSet<IBinding>> data_dependency_current_copy = new HashMap<IBinding, HashSet<IBinding>>();
 	
 	public TopologyNode() {
@@ -48,8 +49,13 @@ public class TopologyNode {
 			return;
 		}
 		this.up_parents.add(one_up_parent);
+		one_up_parent.AddOneChild(this);
 	}
 	
+	private void AddOneChild(TopologyNode one_down_child) {
+		this.down_cjilds.add(one_down_child);
+	}
+
 	public Iterator<TopologyNode> IterateTopologyNode()
 	{
 		return up_parents.iterator();
