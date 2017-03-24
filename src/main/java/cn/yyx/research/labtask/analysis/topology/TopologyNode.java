@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Statement;
 
@@ -15,6 +16,7 @@ public class TopologyNode {
 	private boolean instance_creation = false;
 	// only set when instance_creation is true.
 	private IVariableBinding instance_binding = null;
+	private IMethodBinding instance_creation_binding = null;
 	
 	private Statement kernel = null;
 	private int line_number = -1;
@@ -41,6 +43,10 @@ public class TopologyNode {
 	
 	public void AddOneParent(TopologyNode one_up_parent)
 	{
+		if (one_up_parent == null)
+		{
+			return;
+		}
 		this.up_parents.add(one_up_parent);
 	}
 	
@@ -104,13 +110,18 @@ public class TopologyNode {
 		return instance_creation;
 	}
 
-	public void setInstance_creation(boolean instance_creation, IVariableBinding instance_binding) {
+	public void setInstance_creation(boolean instance_creation, IVariableBinding instance_binding, IMethodBinding instance_creation_binding) {
 		this.instance_creation = instance_creation;
 		this.instance_binding = instance_binding;
+		this.instance_creation_binding = instance_creation_binding;
 	}
 
 	public IVariableBinding getInstance_type_binding() {
 		return instance_binding;
 	}
-	
+
+	public IMethodBinding getInstance_creation_binding() {
+		return instance_creation_binding;
+	}
+
 }
