@@ -24,6 +24,7 @@ public class TopologyNode {
 	private Set<TopologyNode> up_parents = new HashSet<TopologyNode>();
 	private Set<TopologyNode> down_cjilds = new HashSet<TopologyNode>();
 	private Map<IBinding, HashSet<IBinding>> data_dependency_current_copy = new HashMap<IBinding, HashSet<IBinding>>();
+	private HashSet<TopologyNode> sub_tree = new HashSet<TopologyNode>();
 	
 	public TopologyNode() {
 	}
@@ -48,6 +49,8 @@ public class TopologyNode {
 		{
 			return;
 		}
+		this.getSub_tree().add(one_up_parent);
+		this.getSub_tree().addAll(one_up_parent.getSub_tree());
 		this.up_parents.add(one_up_parent);
 		one_up_parent.AddOneChild(this);
 	}
@@ -76,7 +79,7 @@ public class TopologyNode {
 //	public void setRepresent(String represent) {
 //		this.represent = represent;
 //	}
-
+	
 	public boolean isNeed_try_catch() {
 		return need_try_catch;
 	}
@@ -130,4 +133,8 @@ public class TopologyNode {
 		return instance_creation_binding;
 	}
 
+	public HashSet<TopologyNode> getSub_tree() {
+		return sub_tree;
+	}
+	
 }
