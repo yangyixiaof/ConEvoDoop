@@ -11,7 +11,9 @@ public class MergeChoiceOrderedPairs {
 	private List<TopologyNode> depth_order1 = new LinkedList<TopologyNode>();
 	private List<TopologyNode> depth_order2 = new LinkedList<TopologyNode>();
 	
-	public MergeChoiceOrderedPairs() {
+	public MergeChoiceOrderedPairs(List<TopologyNode> depth_order1, List<TopologyNode> depth_order2) {
+		depth_order1.addAll(depth_order1);
+		depth_order2.addAll(depth_order2);
 	}
 	
 	public void AddToList1(TopologyNode tn)
