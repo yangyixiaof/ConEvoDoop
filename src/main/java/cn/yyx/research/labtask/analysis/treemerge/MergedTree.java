@@ -11,9 +11,6 @@ public class MergedTree {
 	private List<TopologyNode> right_thread = null;
 	
 	public MergedTree() {
-		this.setCommon_prefix(common_prefix);
-		this.setLeft_thread(left_thread);
-		this.setRight_thread(right_thread);
 	}
 
 	public List<TopologyNode> getCommon_prefix() {

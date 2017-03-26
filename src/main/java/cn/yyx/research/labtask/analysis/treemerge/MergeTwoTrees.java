@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -14,6 +15,9 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import cn.yyx.research.labtask.analysis.topology.TopologyNode;
 
 public class MergeTwoTrees {
+	
+	private Set<TopologyNode> prim_tree1 = new HashSet<TopologyNode>();
+	private Set<TopologyNode> prim_tree2 = new HashSet<TopologyNode>();
 	
 	private HashMap<TopologyNode, Integer> tree1_depth = new HashMap<TopologyNode, Integer>();
 	private HashMap<TopologyNode, Integer> tree2_depth = new HashMap<TopologyNode, Integer>();
@@ -41,12 +45,41 @@ public class MergeTwoTrees {
 		
 		Merge();
 		
-		GenerateTests();
+		MergedTree mt = new MergedTree();
+		GenerateTests(prim_tree1, mt, true);
+		GenerateTests(prim_tree2, mt, false);
 	}
 	
-	private void GenerateTests() {
-		// return 3 lists of topology nodes.
-		// TODO
+	private void GenerateTests(Set<TopologyNode> prim_tree, MergedTree mt, boolean left_tree) {
+		Queue<TopologyNode> tn_queue = new LinkedList<TopologyNode>();
+		Iterator<TopologyNode> pitr = prim_tree.iterator();
+		while (pitr.hasNext())
+		{
+			TopologyNode tn = pitr.next();
+			tn_queue.add(tn);
+		}
+		while (!tn_queue.isEmpty())
+		{
+			TopologyNode tn = tn_queue.poll();
+			if (deleted.contains(tn) || common_prefix.contains(tn)) {
+				if (common_prefix.contains(tn)) {
+					mt.getCommon_prefix().add(tn);
+				}
+			} else {
+				if (left_tree) {
+					mt.getLeft_thread().add(tn);
+				} else {
+					mt.getRight_thread().add(tn);
+				}
+			}
+			
+			Iterator<TopologyNode> ditr = tn.IterateDownChildren();
+			while (ditr.hasNext())
+			{
+				TopologyNode dtn = ditr.next();
+				tn_queue.add(dtn);
+			}
+		}
 	}
 
 	private Set<TopologyNode> common_prefix = new HashSet<TopologyNode>();
@@ -177,8 +210,8 @@ public class MergeTwoTrees {
 
 	private void IntializeAnalysisEnvironment(Set<TopologyNode> tree1, Set<TopologyNode> tree2)
 	{
-		IterateEachPath(tree1.iterator(), 1, tree1_creation, tree1_depth, tree1_visited);
-		IterateEachPath(tree2.iterator(), 1, tree2_creation, tree2_depth, tree2_visited);
+		IterateEachPath(tree1.iterator(), 1, tree1_creation, tree1_depth, tree1_visited, prim_tree1);
+		IterateEachPath(tree2.iterator(), 1, tree2_creation, tree2_depth, tree2_visited, prim_tree2);
 		Iterator<TopologyNode> t1itr = tree1_creation.iterator();
 		while (t1itr.hasNext())
 		{
@@ -244,7 +277,7 @@ public class MergeTwoTrees {
 		return tnlist;
 	}
 	
-	private void IterateEachPath(Iterator<TopologyNode> itr, int depth, Set<TopologyNode> tree_creation, HashMap<TopologyNode, Integer> tree_depth, Set<TopologyNode> tree_visited)
+	private void IterateEachPath(Iterator<TopologyNode> itr, int depth, Set<TopologyNode> tree_creation, HashMap<TopologyNode, Integer> tree_depth, Set<TopologyNode> tree_visited, Set<TopologyNode> prim_tree)
 	{
 		while (itr.hasNext())
 		{
@@ -257,9 +290,14 @@ public class MergeTwoTrees {
 			if (!tree_visited.contains(tn))
 			{
 				tree_visited.add(tn);
-				IterateEachPath(tn.IterateUpParents(), depth+1, tree_creation, tree_depth, tree_visited);
+				Iterator<TopologyNode> upitr = tn.IterateUpParents();
+				if (!upitr.hasNext()) {
+					prim_tree.add(tn);
+				} else {
+					IterateEachPath(upitr, depth+1, tree_creation, tree_depth, tree_visited, prim_tree);
+				}
 			}
 		}
 	}
-	
+
 }
