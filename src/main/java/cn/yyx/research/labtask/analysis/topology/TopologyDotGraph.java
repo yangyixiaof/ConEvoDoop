@@ -47,7 +47,7 @@ public class TopologyDotGraph {
 			if (!visited.contains(tn))
 			{
 				visited.add(tn);
-				IterateEachPath(tn.IterateTopologyNode(), sb, line_number + "");
+				IterateEachPath(tn.IterateUpParents(), sb, line_number + "");
 			}
 		}
 	}

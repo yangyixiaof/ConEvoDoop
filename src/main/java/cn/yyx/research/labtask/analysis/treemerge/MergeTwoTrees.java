@@ -30,11 +30,7 @@ public class MergeTwoTrees {
 	private Map<MergeTypeMethod, MergeChoicePairs> mtms = new HashMap<MergeTypeMethod, MergeChoicePairs>();
 	private Map<MergeTypeMethod, MergeChoiceOrderedPairs> mtms_ordered = new HashMap<MergeTypeMethod, MergeChoiceOrderedPairs>();
 	
-	private Set<TopologyNode> tree1_node_to_merge = new HashSet<TopologyNode>();
-	private Set<TopologyNode> tree2_node_to_merge = new HashSet<TopologyNode>();
-	
-	private Set<TopologyNode> tree1_root_to_merge = new HashSet<TopologyNode>();
-	private Set<TopologyNode> tree2_root_to_merge = new HashSet<TopologyNode>();
+	private List<MergeChoicePair> merge_pairs = new LinkedList<MergeChoicePair>();
 	
 	private int count = 0;
 	
@@ -43,9 +39,77 @@ public class MergeTwoTrees {
 		
 		PrepareMergeMaterial(max_merge_times);
 		
+		Merge();
 		
+		GenerateTests();
 	}
 	
+	private void GenerateTests() {
+		// return 3 lists of topology nodes.
+		// TODO
+	}
+
+	private Set<TopologyNode> common_prefix = new HashSet<TopologyNode>();
+	private Set<TopologyNode> deleted = new HashSet<TopologyNode>();
+	
+	private void Merge() {
+		// rename first.
+		RenameOneTree(tree1_depth, rename_rule_tree1);
+		RenameOneTree(tree2_depth, rename_rule_tree2);
+		
+		// merge
+		Iterator<MergeChoicePair> mitr = merge_pairs.iterator();
+		while (mitr.hasNext())
+		{
+			MergeChoicePair mcp = mitr.next();
+			TopologyNode rep = mcp.ChooseReplaced();
+			TopologyNode del = mcp.ChooseDeleted();
+			DeleteSubTree(del);
+			common_prefix.addAll(rep.getSub_tree());
+		}
+	}
+	
+	private void DeleteSubTree(TopologyNode del)
+	{
+		deleted.add(del);
+		HashSet<TopologyNode> cmp_tree = del.getSub_tree();
+		Iterator<TopologyNode> itr = cmp_tree.iterator();
+		while (itr.hasNext())
+		{
+			TopologyNode tn = itr.next();
+			if (tn == del)
+			{
+				continue;
+			}
+			boolean should_delete = true;
+			Iterator<TopologyNode> ditr = tn.IterateDownChildren();
+			while (ditr.hasNext())
+			{
+				TopologyNode dtn = ditr.next();
+				if (!cmp_tree.contains(dtn))
+				{
+					should_delete = false;
+					break;
+				}
+			}
+			if (should_delete)
+			{
+				deleted.add(tn);
+			}
+		}
+	}
+	
+	private void RenameOneTree(HashMap<TopologyNode, Integer> tree_depth, Map<IVariableBinding, String> rename_rule_tree)
+	{
+		Set<TopologyNode> tns = tree_depth.keySet();
+		Iterator<TopologyNode> titr = tns.iterator();
+		while (titr.hasNext())
+		{
+			TopologyNode tn = titr.next();
+			tn.getKernel().accept(new MergeRename(rename_rule_tree));
+		}
+	}
+
 	private void PrepareMergeMaterial(int max_merge_times) {
 		int pre_max_times = -1;
 		int now_max_times = max_merge_times;
@@ -65,8 +129,7 @@ public class MergeTwoTrees {
 					String merge_name = "merge_"+count;
 					rename_rule_tree1.put(mpair.getTn1().getInstance_type_binding(), merge_name);
 					rename_rule_tree2.put(mpair.getTn2().getInstance_type_binding(), merge_name);
-					tree1_node_to_merge.add(mpair.getTn1());
-					tree2_node_to_merge.add(mpair.getTn2());
+					merge_pairs.add(mpair);
 					
 					now_max_times--;
 					if (now_max_times < 0)
@@ -77,40 +140,40 @@ public class MergeTwoTrees {
 			}
 		}
 		
-		EliminateMergeSubTree(tree1_node_to_merge, tree1_root_to_merge);
-		EliminateMergeSubTree(tree2_node_to_merge, tree2_root_to_merge);
+		// EliminateMergeSubTree(tree1_node_to_merge, tree1_root_to_merge);
+		// EliminateMergeSubTree(tree2_node_to_merge, tree2_root_to_merge);
 	}
 	
-	private void EliminateMergeSubTree(Set<TopologyNode> tree_node_to_merge, Set<TopologyNode> tree_root_to_merge)
-	{
-		tree_root_to_merge.addAll(tree_node_to_merge);
-		Set<TopologyNode> to_be_deleted = new HashSet<TopologyNode>();
-		
-		Iterator<TopologyNode> titr1 = to_be_deleted.iterator();
-		while (titr1.hasNext())
-		{
-			TopologyNode tn1 = titr1.next();
-			Iterator<TopologyNode> titr2 = to_be_deleted.iterator();
-			while (titr2.hasNext())
-			{
-				TopologyNode tn2 = titr2.next();
-				if (tn1 != tn2)
-				{
-					if (tn2.getSub_tree().contains(tn1))
-					{
-						to_be_deleted.add(tn1);
-					}
-				}
-			}
-		}
-		
-		Iterator<TopologyNode> itr = to_be_deleted.iterator();
-		while (itr.hasNext())
-		{
-			TopologyNode tn = itr.next();
-			tree_root_to_merge.remove(tn);
-		}
-	}
+//	private void EliminateMergeSubTree(Set<TopologyNode> tree_node_to_merge, Set<TopologyNode> tree_root_to_merge)
+//	{
+//		tree_root_to_merge.addAll(tree_node_to_merge);
+//		Set<TopologyNode> to_be_deleted = new HashSet<TopologyNode>();
+//		
+//		Iterator<TopologyNode> titr1 = to_be_deleted.iterator();
+//		while (titr1.hasNext())
+//		{
+//			TopologyNode tn1 = titr1.next();
+//			Iterator<TopologyNode> titr2 = to_be_deleted.iterator();
+//			while (titr2.hasNext())
+//			{
+//				TopologyNode tn2 = titr2.next();
+//				if (tn1 != tn2)
+//				{
+//					if (tn2.getSub_tree().contains(tn1))
+//					{
+//						to_be_deleted.add(tn1);
+//					}
+//				}
+//			}
+//		}
+//		
+//		Iterator<TopologyNode> itr = to_be_deleted.iterator();
+//		while (itr.hasNext())
+//		{
+//			TopologyNode tn = itr.next();
+//			tree_root_to_merge.remove(tn);
+//		}
+//	}
 
 	private void IntializeAnalysisEnvironment(Set<TopologyNode> tree1, Set<TopologyNode> tree2)
 	{
@@ -194,7 +257,7 @@ public class MergeTwoTrees {
 			if (!tree_visited.contains(tn))
 			{
 				tree_visited.add(tn);
-				IterateEachPath(tn.IterateTopologyNode(), depth+1, tree_creation, tree_depth, tree_visited);
+				IterateEachPath(tn.IterateUpParents(), depth+1, tree_creation, tree_depth, tree_visited);
 			}
 		}
 	}
